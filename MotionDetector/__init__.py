@@ -30,7 +30,9 @@ class MotionDetector(threading.Thread):
                                           buffer=self.frame_buffer,
                                           max_fps=1.0,
                                           logger=self.logger)
+        # ToDo: Define Threshold for motion detection
         self.preprocessor = PreProcessor(scale=0.3,
+                                         sub_threshold=80,
                                          mask_path=get_path("./data/mask.png"),
                                          logger=self.logger)
         self.contour_processor = ContourProcessor(min_area_ratio=2.0,

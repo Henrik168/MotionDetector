@@ -32,13 +32,14 @@ def morphological_transformation(frame: ndarray,
 class PreProcessor:
     def __init__(self,
                  scale: float = 1.0,
+                 sub_threshold: int = 25,
                  mask_path: str = None,
                  logger: logging.Logger = None):
         self.scale = scale
         self.mask_path = mask_path
         self.mask = self._load_mask() if mask_path else array([])
         self.logger = logger if logger else getLogger()
-        self.subtractor = cv2.createBackgroundSubtractorMOG2(varThreshold=25, detectShadows=False)
+        self.subtractor = cv2.createBackgroundSubtractorMOG2(varThreshold=sub_threshold, detectShadows=False)
 
     def _subtract_background(self, frame: ndarray) -> ndarray:
         return self.subtractor.apply(frame)
