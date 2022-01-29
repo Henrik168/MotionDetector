@@ -17,6 +17,8 @@ from src.lib_path import get_path
 class MotionDetector(threading.Thread):
     def __init__(self,
                  url: str,
+                 min_area_ratio: float = 2.0,
+                 max_area_ratio: float = 10.0,
                  logger: logging.Logger = None):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -35,8 +37,8 @@ class MotionDetector(threading.Thread):
                                          sub_threshold=80,
                                          mask_path=get_path("./data/mask.png"),
                                          logger=self.logger)
-        self.contour_processor = ContourProcessor(min_area_ratio=2.0,
-                                                  max_area_ratio=35.0,
+        self.contour_processor = ContourProcessor(min_area_ratio=min_area_ratio,
+                                                  max_area_ratio=max_area_ratio,
                                                   logger=self.logger)
         self.motion_buffer = MotionBuffer(buffer_size=2)
 
