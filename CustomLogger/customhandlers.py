@@ -19,7 +19,7 @@ def get_path(name: str, log_path: str) -> str:
 def calc_sleep(current_time: datetime) -> int:
     next_day = current_time.date() + timedelta(days=1)
     midnight = datetime(next_day.year, next_day.month, next_day.day)
-    return (midnight - datetime.now() + timedelta(seconds=1)).seconds
+    return max(1, (midnight - datetime.now() + timedelta(seconds=1)).seconds)
 
 
 class TimedFileHandler(Thread):
