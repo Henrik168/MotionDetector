@@ -36,7 +36,7 @@ class StreamReader:
             self.cap.release()
             self.cap.open(self.url)
             if self.cap.isOpened():
-                log.warning(f"Reconnection successful! to stream: {self.url}")
+                log.info(f"Reconnection successful! to stream: {self.url}")
                 break
 
             log.warning(f"Waiting for {sec_wait} seconds to reconnect.")
