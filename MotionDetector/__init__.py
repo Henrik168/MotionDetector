@@ -1,7 +1,6 @@
 import logging
 import queue
 import threading
-from datetime import datetime
 
 from MotionDetector.buffer_frame import FrameBuffer
 from MotionDetector.event_handler import BasicHandler
@@ -10,36 +9,31 @@ from MotionDetector.capture import StreamReader
 from MotionDetector.preprocessor import PreProcessor
 from MotionDetector.contours import ContourProcessor
 from MotionDetector.buffer_motion import MotionBuffer, MotionFlag
-from CustomLogger import getLogger
 from src.lib_path import get_path
+
+log = logging.getLogger(__name__)
 
 
 class MotionDetector(threading.Thread):
     def __init__(self,
                  url: str,
                  min_area_ratio: float = 2.0,
-                 max_area_ratio: float = 10.0,
-                 logger: logging.Logger = None):
+                 max_area_ratio: float = 10.0):
         threading.Thread.__init__(self)
         self.daemon = True
         self.exception = None
-
-        self.logger = logger if logger else getLogger()
 
         self.url = url
         self.frame_buffer = FrameBuffer(buffer_size=30)
         self.stream_reader = StreamReader(url=url,
                                           buffer=self.frame_buffer,
-                                          max_fps=1.0,
-                                          logger=self.logger)
+                                          max_fps=1.0)
         # ToDo: Define Threshold for motion detection
         self.preprocessor = PreProcessor(scale=0.3,
                                          sub_threshold=80,
-                                         mask_path=get_path("./data/mask.png"),
-                                         logger=self.logger)
+                                         mask_path=get_path("./data/mask.png"))
         self.contour_processor = ContourProcessor(min_area_ratio=min_area_ratio,
-                                                  max_area_ratio=max_area_ratio,
-                                                  logger=self.logger)
+                                                  max_area_ratio=max_area_ratio)
         self.motion_buffer = MotionBuffer(buffer_size=2)
 
         self.motion_start_handler = BasicHandler()
@@ -78,11 +72,11 @@ class MotionDetector(threading.Thread):
 
             except KeyboardInterrupt as e:
                 self.exception = e
-                self.logger.exception(e)
+                log.exception(e)
                 break
             except Exception as e:
                 self.exception = e
-                self.logger.exception(e)
+                log.exception(e)
                 break
 
     def get_exception(self) -> Exception:

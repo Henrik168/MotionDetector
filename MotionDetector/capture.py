@@ -5,20 +5,19 @@ from numpy import ndarray
 import logging
 
 from MotionDetector.buffer_frame import FrameBuffer
-from CustomLogger import getLogger
+
+log = logging.getLogger(__name__)
 
 
 class StreamReader:
     def __init__(self,
                  url: str,
                  buffer: FrameBuffer,
-                 max_fps: float = 0.5,
-                 logger: logging.Logger = None):
+                 max_fps: float = 0.5):
         self.url = url
         self.buffer = buffer
         self.max_fps = max_fps
         self.last_capture = time.time()
-        self.logger = logger if logger else getLogger()
 
         self.cap = VideoCapture()
 
@@ -32,15 +31,15 @@ class StreamReader:
 
     def reconnect(self, max_sec: int = 1024) -> None:
         sec_wait = 1
-        self.logger.warning(f"Cannot connect to Videostream.")
+        log.warning(f"Cannot connect to Videostream.")
         while True:
             self.cap.release()
             self.cap.open(self.url)
             if self.cap.isOpened():
-                self.logger.warning(f"Reconnection successful! to stream: {self.url}")
+                log.warning(f"Reconnection successful! to stream: {self.url}")
                 break
 
-            self.logger.warning(f"Waiting for {sec_wait} seconds to reconnect.")
+            log.warning(f"Waiting for {sec_wait} seconds to reconnect.")
             sleep(sec_wait)
             sec_wait = min(max_sec, sec_wait * 2)  # limit waiting Time to max_sec
             if sec_wait == max_sec:

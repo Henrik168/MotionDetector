@@ -5,24 +5,23 @@ from typing import List, Tuple
 
 from MotionDetector.item_contours import ContourItem
 from MotionDetector.item_image import ImageItem
-from CustomLogger import getLogger
+
+log = logging.getLogger(__name__)
 
 
 class ContourProcessor:
     def __init__(self,
                  min_area_ratio: float = 2.0,
                  max_area_ratio: float = 35.0,
-                 scale: float = 0.3,
-                 logger: logging.Logger = None):
+                 scale: float = 0.3):
         self.min_area_ratio = min_area_ratio
         self.max_area_ratio = max_area_ratio
         self.scale = scale
-        self.logger = logger if logger else getLogger()
         self.frame_area: int = 0
 
     def compute_area_ratio(self, contour: ndarray) -> bool:
         area_ratio = round((cv2.contourArea(contour) / self.frame_area) * 100, 1)
-        self.logger.debug(f"Area ratio: '{area_ratio}'")
+        log.debug(f"Area ratio: '{area_ratio}'")
         return self.min_area_ratio < area_ratio < self.max_area_ratio
 
     def filter_contours(self, contours: Tuple[ndarray]) -> List[ContourItem]:

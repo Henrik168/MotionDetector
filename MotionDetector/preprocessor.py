@@ -4,7 +4,8 @@ from numpy import ndarray, array
 from os.path import isfile
 
 from MotionDetector.item_image import ImageItem
-from CustomLogger import getLogger
+
+log = logging.getLogger(__name__)
 
 
 def resize_frame(frame: ndarray, scale: float = 1.0) -> ndarray:
@@ -33,12 +34,10 @@ class PreProcessor:
     def __init__(self,
                  scale: float = 1.0,
                  sub_threshold: int = 25,
-                 mask_path: str = None,
-                 logger: logging.Logger = None):
+                 mask_path: str = None):
         self.scale = scale
         self.mask_path = mask_path
         self.mask = self._load_mask() if mask_path else array([])
-        self.logger = logger if logger else getLogger()
         self.subtractor = cv2.createBackgroundSubtractorMOG2(varThreshold=sub_threshold, detectShadows=False)
 
     def _subtract_background(self, frame: ndarray) -> ndarray:
