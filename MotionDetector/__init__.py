@@ -2,8 +2,8 @@ import logging
 import queue
 import threading
 
+import Eventhandler
 from MotionDetector.buffer_frame import FrameBuffer
-from MotionDetector.event_handler import BasicHandler
 from MotionDetector.item_image import ImageItem
 from MotionDetector.capture import StreamReader
 from MotionDetector.preprocessor import PreProcessor
@@ -36,8 +36,8 @@ class MotionDetector(threading.Thread):
                                                   max_area_ratio=max_area_ratio)
         self.motion_buffer = MotionBuffer(buffer_size=2)
 
-        self.motion_start_handler = BasicHandler()
-        self.motion_end_handler = BasicHandler()
+        self.motion_start_handler = Eventhandler.ThreadHandler()
+        self.motion_end_handler = Eventhandler.ThreadHandler()
 
         self.output_queue = queue.Queue()
 
@@ -55,6 +55,10 @@ class MotionDetector(threading.Thread):
         return image_item
 
     def run(self) -> None:
+        # Start threaded Handler
+        self.motion_start_handler.start()
+        self.motion_end_handler.start()
+
         while True:
             try:
                 frame = self.stream_reader.capture()
